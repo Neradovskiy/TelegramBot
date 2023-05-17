@@ -43,7 +43,12 @@ namespace TelegramBot
             Message msg = update.Message;
             CallbackQuery answer = update.CallbackQuery;
             DaoClient daoClient = new DaoClient(db.GetContext());
-            if (msg != null && daoClient.GetByChatIdAsync(msg.Chat.Id) != null)
+            Client test = null;
+            if (msg != null)
+            {
+                test = await daoClient.GetByChatIdAsync(msg.Chat.Id);
+            }
+            if (msg != null && test != null)
             {
                 List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
                 InlineKeyboardButton entry = new InlineKeyboardButton("Записаться");
@@ -56,12 +61,12 @@ namespace TelegramBot
                 botClient.SendTextMessageAsync(msg.Chat.Id, "Выберите действие", replyMarkup: ikm);
             }
 
-            else if (answer.Data == entryAnswer)
+            else if (answer != null && answer.Data == entryAnswer)
             {
                 await botClient.SendTextMessageAsync(answer.Message.Chat.Id, "Выберите дату", replyMarkup: GetDateButtons());
             }
 
-            else if (answer.Data == backAnswer)
+            else if (answer != null && answer.Data == backAnswer)
             {
                 List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
                 InlineKeyboardButton entry = new InlineKeyboardButton("Записаться");
@@ -73,13 +78,13 @@ namespace TelegramBot
                 InlineKeyboardMarkup ikm = new InlineKeyboardMarkup(buttons);
                 await botClient.SendTextMessageAsync(answer.Message.Chat.Id, "Выберите дату", replyMarkup: ikm);
             }
-            else if (answer.Data.Contains(dateAnswer))
+            else if (answer != null && answer.Data.Contains(dateAnswer))
             {
                 string date = answer.Data.Trim(dateAnswer.ToCharArray());
                 await botClient.SendTextMessageAsync(answer.Message.Chat.Id,
                     "Выберите время:", replyMarkup: GetTimeButtons(date));
             }
-            else if (answer.Data.Contains(timeAnswer))
+            else if (answer != null && answer.Data.Contains(timeAnswer))
             {
 
                 string date = answer.Data.Trim(timeAnswer.ToCharArray());
