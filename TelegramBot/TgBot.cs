@@ -8,6 +8,7 @@ using TelegramBot.Model;
 using TelegramBot.Service;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Formats.Asn1.AsnWriter;
+using Update = Telegram.Bot.Types.Update;
 
 namespace TelegramBot
 {
@@ -29,7 +30,7 @@ namespace TelegramBot
                  .AddJsonFile("appsettings.json")
                  .Build();
             bot = new TelegramBotClient(configuration["TelgramToken"]);
-            bot.StartReceiving(UpdateBot, Error);
+            bot.StartReceiving(Update, Error);
             db = new DbFactory(scopeFactory);
         }
         private Task Error(ITelegramBotClient arg1, Exception arg2, CancellationToken arg3)
@@ -37,7 +38,7 @@ namespace TelegramBot
             throw new Exception("TelegramBot exeption", arg2);
         }
 
-        private async Task UpdateBot(ITelegramBotClient botClient, Update update, CancellationToken token)
+        private async Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
             Message msg = update.Message;
             CallbackQuery answer = update.CallbackQuery;
@@ -52,12 +53,12 @@ namespace TelegramBot
                 cancelEntry.CallbackData = cancelEntryAnswer;
                 buttons.Add(cancelEntry);
                 InlineKeyboardMarkup ikm = new InlineKeyboardMarkup(buttons);
-                botClient.SendTextMessageAsync(msg.Chat.Id, "Выберите дату", replyMarkup: ikm);
+                botClient.SendTextMessageAsync(msg.Chat.Id, "Выберите действие", replyMarkup: ikm);
             }
 
             else if (answer.Data == entryAnswer)
             {
-                botClient.SendTextMessageAsync(msg.Chat.Id, "Выберите дату", replyMarkup: GetDateButtons());
+                await botClient.SendTextMessageAsync(answer.Message.Chat.Id, "Выберите дату", replyMarkup: GetDateButtons());
             }
 
             else if (answer.Data == backAnswer)
@@ -70,13 +71,13 @@ namespace TelegramBot
                 cancelEntry.CallbackData = cancelEntryAnswer;
                 buttons.Add(cancelEntry);
                 InlineKeyboardMarkup ikm = new InlineKeyboardMarkup(buttons);
-                botClient.SendTextMessageAsync(msg.Chat.Id, "Выберите дату", replyMarkup: ikm);
+                await botClient.SendTextMessageAsync(answer.Message.Chat.Id, "Выберите дату", replyMarkup: ikm);
             }
             else if (answer.Data.Contains(dateAnswer))
             {
                 string date = answer.Data.Trim(dateAnswer.ToCharArray());
-                botClient.SendTextMessageAsync(answer.Message.Chat.Id,
-                   "Выберите время:", replyMarkup: GetTimeButtons(date));
+                await botClient.SendTextMessageAsync(answer.Message.Chat.Id,
+                    "Выберите время:", replyMarkup: GetTimeButtons(date));
             }
             else if (answer.Data.Contains(timeAnswer))
             {
