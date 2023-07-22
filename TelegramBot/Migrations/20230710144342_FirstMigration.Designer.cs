@@ -12,15 +12,15 @@ using TelegramBot.Model;
 namespace TelegramBot.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230511093132_Change in Plan for dat clients list")]
-    partial class ChangeinPlanfordatclientslist
+    [Migration("20230710144342_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -69,11 +69,11 @@ namespace TelegramBot.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<int?>("PlanForDayId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("StartTrainig")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("TrainingId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("WorkerId")
                         .HasColumnType("integer");
@@ -82,7 +82,7 @@ namespace TelegramBot.Migrations
 
                     b.HasIndex("AbonementId");
 
-                    b.HasIndex("PlanForDayId");
+                    b.HasIndex("TrainingId");
 
                     b.HasIndex("WorkerId");
 
@@ -120,6 +120,27 @@ namespace TelegramBot.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("TelegramBot.Model.Training", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("PlanForDayId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanForDayId");
+
+                    b.ToTable("Training");
                 });
 
             modelBuilder.Entity("TelegramBot.Model.Worker", b =>
@@ -166,15 +187,22 @@ namespace TelegramBot.Migrations
                         .WithMany()
                         .HasForeignKey("AbonementId");
 
-                    b.HasOne("TelegramBot.Model.PlanForDay", null)
+                    b.HasOne("TelegramBot.Model.Training", null)
                         .WithMany("Clients")
-                        .HasForeignKey("PlanForDayId");
+                        .HasForeignKey("TrainingId");
 
                     b.HasOne("TelegramBot.Model.Worker", null)
                         .WithMany("Clients")
                         .HasForeignKey("WorkerId");
 
                     b.Navigation("Abonement");
+                });
+
+            modelBuilder.Entity("TelegramBot.Model.Training", b =>
+                {
+                    b.HasOne("TelegramBot.Model.PlanForDay", null)
+                        .WithMany("Trainings")
+                        .HasForeignKey("PlanForDayId");
                 });
 
             modelBuilder.Entity("TelegramBot.Model.Worker", b =>
@@ -187,6 +215,11 @@ namespace TelegramBot.Migrations
                 });
 
             modelBuilder.Entity("TelegramBot.Model.PlanForDay", b =>
+                {
+                    b.Navigation("Trainings");
+                });
+
+            modelBuilder.Entity("TelegramBot.Model.Training", b =>
                 {
                     b.Navigation("Clients");
                 });

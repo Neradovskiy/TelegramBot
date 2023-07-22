@@ -39,6 +39,25 @@ namespace TelegramBot.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Training",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PlanForDayId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Training", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Training_PlanForDay_PlanForDayId",
+                        column: x => x.PlanForDayId,
+                        principalTable: "PlanForDay",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Workers",
                 columns: table => new
                 {
@@ -91,6 +110,7 @@ namespace TelegramBot.Migrations
                     AbonementId = table.Column<int>(type: "integer", nullable: true),
                     StartTrainig = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndTrainig = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TrainingId = table.Column<int>(type: "integer", nullable: true),
                     WorkerId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -100,6 +120,11 @@ namespace TelegramBot.Migrations
                         name: "FK_Clients_Abonements_AbonementId",
                         column: x => x.AbonementId,
                         principalTable: "Abonements",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Clients_Training_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Training",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Clients_Workers_WorkerId",
@@ -119,9 +144,19 @@ namespace TelegramBot.Migrations
                 column: "AbonementId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Clients_TrainingId",
+                table: "Clients",
+                column: "TrainingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clients_WorkerId",
                 table: "Clients",
                 column: "WorkerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Training_PlanForDayId",
+                table: "Training",
+                column: "PlanForDayId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workers_PlanId",
@@ -137,6 +172,9 @@ namespace TelegramBot.Migrations
 
             migrationBuilder.DropTable(
                 name: "Abonements");
+
+            migrationBuilder.DropTable(
+                name: "Training");
 
             migrationBuilder.DropTable(
                 name: "Workers");

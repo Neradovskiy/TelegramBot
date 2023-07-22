@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public List<Client>? Clients { get; set; } = new();
+        public List<Training>? Trainings { get; set; } = new();
     }
 }

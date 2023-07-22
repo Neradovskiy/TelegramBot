@@ -44,10 +44,11 @@ namespace TelegramBot.Service
                     return temp;
             return null;
         }
-
+        // Не изменяет существующего клиента а создаёт нового если не указан Id
         public async Task<Client> UpdateAsync(Client obj)
         {
             DaoAbonement abonement = new DaoAbonement(_context);
+            // add chek null abonement
             obj.Abonement = await abonement.GetAsync(obj.Abonement.Id);
             _context.Clients.Update(obj);
             await _context.SaveChangesAsync();

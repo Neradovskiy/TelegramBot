@@ -15,13 +15,13 @@ namespace TelegramBot.Service
 
         public async Task<PlanForDay> AddAsync(PlanForDay obj)
         {
-            if (obj.Clients != null)
+            if (obj.Trainings != null)
             {
-                DaoClient daoClient = new DaoClient(_context);
-                List<Client> clients = new List<Client>();
-                foreach (Client client in obj.Clients)
-                    clients.Add(await daoClient.GetAsync(client.Id));
-                obj.Clients = clients;
+                DaoTraining daoTraining = new DaoTraining(_context);
+                List<Training> trainings = new List<Training>();
+                foreach (Training training in obj.Trainings)
+                    trainings.Add(await daoTraining.GetAsync(training.Id));
+                obj.Trainings = trainings;
             }
             _context.PlanForDay.Add(obj);
             await _context.SaveChangesAsync();
@@ -64,13 +64,13 @@ namespace TelegramBot.Service
 
         public async Task<PlanForDay> UpdateAsync(PlanForDay obj)
         {
-            if (obj.Clients != null)
+            if (obj.Trainings != null)
             {
-                DaoClient daoClient = new DaoClient(_context);
-                List<Client> clients = new List<Client>();
-                foreach (Client client in obj.Clients)
-                    clients.Add(await daoClient.GetAsync(client.Id));
-                obj.Clients = clients;
+                DaoTraining daoTraining = new DaoTraining(_context);
+                List<Training> trainings = new List<Training>();
+                foreach (Training training in obj.Trainings)
+                    trainings.Add(await daoTraining.GetAsync(training.Id));
+                obj.Trainings = trainings;
             }
             _context.PlanForDay.Update(obj);
             await _context.SaveChangesAsync();
